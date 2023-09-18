@@ -2,11 +2,31 @@
   "name": "expo-camera-av",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
+  "description": "More camera functions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vladis-c/expo-camera-av"
+  },
+  "homepage": "https://github.com/vladis-c/expo-camera-av",
+  "bugs": {
+    "url": "https://github.com/vladis-c/expo-camera-av"
+  },
+  "author": "Vladis C.",
+  "keywords": [
+    "expo",
+    "react",
+    "native",
+    "react-native",
+    "camera",
+    "audio",
+    "av",
+    "video"
+  ],
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "build": "npx tsc --noEmit false --declaration && cpy \"src/**/*.!(ts|tsx)\" dist"
   },
   "dependencies": {
     "expo": "~49.0.11",
@@ -19,5 +39,10 @@
     "@types/react": "~18.2.14",
     "typescript": "^5.1.3"
   },
-  "private": true
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
 }
