@@ -3,7 +3,7 @@ import {Audio} from 'expo-av';
 
 export type AudioContextProps = {
   audioIsPrepared: boolean;
-  setAudioIsPrepared: (state: boolean) => void;
+  setAudioShouldPrepare: (v: boolean) => void;
 };
 
 export const AudioContext = createContext<AudioContextProps>(
@@ -12,10 +12,11 @@ export const AudioContext = createContext<AudioContextProps>(
 
 const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
   const [audioIsPrepared, setAudioIsPrepared] = useState<boolean>(false);
+  const [audioShouldPrepare, setAudioShouldPrepare] = useState<boolean>(false);
 
   const handleAudio = async () => {
     try {
-      if (!audioIsPrepared && (await handleAudioPermissions())) {
+      if (await handleAudioPermissions()) {
         await Audio.setAudioModeAsync({
           //only Android setup
           playThroughEarpieceAndroid: true,
@@ -42,11 +43,16 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
   };
 
   useEffect(() => {
-    handleAudio();
-  }, []);
+    // only if audioShouldPrepare is true (if user set this prop as true to the camera component)
+    // then start audio preparation
+    if (audioShouldPrepare) {
+      // handleAudio();
+      console.log('audio to be prepared here');
+    }
+  }, [audioShouldPrepare]);
 
   return (
-    <AudioContext.Provider value={{audioIsPrepared, setAudioIsPrepared}}>
+    <AudioContext.Provider value={{audioIsPrepared, setAudioShouldPrepare}}>
       {children}
     </AudioContext.Provider>
   );
@@ -54,9 +60,17 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
 
 export default AudioContextProvider;
 
-export const useAudioState = () => {
-  const {audioIsPrepared, setAudioIsPrepared} = useContext(
+export const useAudioState = (audioSourceList: boolean) => {
+  const {audioIsPrepared, setAudioShouldPrepare} = useContext(
     AudioContext,
   ) as AudioContextProps;
-  return [audioIsPrepared, setAudioIsPrepared] as const;
+
+  useEffect(() => {
+    // we must prepare audio globally only once
+    if (!audioIsPrepared) {
+      setAudioShouldPrepare(audioSourceList);
+    }
+  }, [audioSourceList]);
+
+  return audioIsPrepared;
 };

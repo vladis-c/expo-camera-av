@@ -1,3 +1,6 @@
+import {Camera as ExpoCamera} from 'expo-camera';
+import {useEffect, useState} from 'react';
+
 export const omit = <T extends object, K extends keyof T>(
   obj: T,
   props: K[],
@@ -9,4 +12,26 @@ export const omit = <T extends object, K extends keyof T>(
     delete result[prop];
   });
   return result;
+};
+
+export const useCameraPermissions = () => {
+  const [permissions, setPermissions] = useState<boolean>(false);
+
+  const handlePermissions = async () => {
+    try {
+      const perm1 = await ExpoCamera.requestCameraPermissionsAsync();
+      const perm2 = await ExpoCamera.requestMicrophonePermissionsAsync();
+      if (perm1 && perm2) {
+        setPermissions(true);
+      }
+    } catch (error) {
+      throw new Error('handlePermissions ' + error);
+    }
+  };
+
+  useEffect(() => {
+    handlePermissions();
+  }, []);
+
+  return permissions;
 };

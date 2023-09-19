@@ -23,8 +23,14 @@
         "backgroundColor": "#ffffff"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera for video recordings.",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone for video recordings."
+        }
+      ]
+    ]
   }
 }

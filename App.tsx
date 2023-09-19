@@ -1,29 +1,17 @@
-import {useRef} from 'react';
-import {StyleSheet} from 'react-native';
+import AudioContextProvider from './src/Context';
+import CameraAV from './src';
+import {useCameraPermissions} from './src/utils';
 
-import {omit} from './src/utils';
-import AudioContextProvider, {useAudioState} from './src/Context';
+const App = () => {
+  const permissions = useCameraPermissions();
 
-const styles = StyleSheet.create({
-  camera: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-const App = (props: AppProps) => {
-  const cameraProps = omit(props, ['children']) as CameraProps;
-  const children = props.children;
-
-  const cameraRef = useRef<Camera>(null);
-  const [audioIsPrepared, setAudioIsPrepared] = useAudioState();
+  if (!permissions) {
+    return null;
+  }
 
   return (
     <AudioContextProvider>
-      <Camera style={styles.camera} ref={cameraRef} {...cameraProps}>
-        {children}
-      </Camera>
+      <CameraAV audioSourceList={false} />
     </AudioContextProvider>
   );
 };

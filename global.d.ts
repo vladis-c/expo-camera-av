@@ -9,8 +9,11 @@ declare global {
    * ```
    * class Camera extends ExpoCamera {}
    * ```
-  */
+   */
   export class Camera extends ExpoCamera {}
   export type CameraProps = ExpoCameraProps;
-  export type AppProps = CameraProps & {children: React.ReactNode};
+  export type CameraAVProps = CameraProps & {
+    children?: React.ReactNode;
+    audioSourceList?: boolean;
+  };
 }
