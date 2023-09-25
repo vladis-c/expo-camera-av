@@ -12,7 +12,11 @@ const App = () => {
 
   return (
     <AudioContextProvider>
-      <CameraAV audioSourceList={true} type={CameraType.front} />
+      <CameraAV
+        audioSourceList={true}
+        type={CameraType.front}
+        onShowInputs={inputs => console.log('App.tsx', inputs)}
+      />
     </AudioContextProvider>
   );
 };

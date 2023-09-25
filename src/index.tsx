@@ -1,5 +1,5 @@
-import {useRef} from 'react';
-import {StyleSheet} from 'react-native';
+import {useEffect, useRef} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {Camera as ExpoCamera} from 'expo-camera';
 
 import {useAudioState} from './Context';
@@ -14,17 +14,22 @@ const styles = StyleSheet.create({
 });
 
 const CameraAV = (props: CameraAVProps) => {
-  const cameraProps = omit(props, ['children']) as CameraProps;
-  const {children, audioSourceList} = props;
+  const {children, audioSourceList, onShowInputs} = props;
 
   const cameraRef = useRef<Camera>(null);
-  const audioIsPrepared = useAudioState(!!audioSourceList);
+  const {audioIsPrepared, audioInputs} = useAudioState(onShowInputs);
 
   // if user wants to enable audio source select,
   // then we check for audio and do not render camera before Audio is setup
-  if (audioSourceList && !audioIsPrepared) {
+  if (audioSourceList && !audioIsPrepared && audioInputs.length === 0) {
     return null;
   }
+
+  const cameraProps = omit(props, [
+    'children',
+    'onShowInputs',
+    'audioSourceList',
+  ]) as CameraProps;
 
   return (
     <ExpoCamera style={styles.camera} ref={cameraRef} {...cameraProps}>

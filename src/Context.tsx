@@ -4,6 +4,7 @@ import {Audio} from 'expo-av';
 export type AudioContextProps = {
   audioIsPrepared: boolean;
   setAudioShouldPrepare: (v: boolean) => void;
+  audioInputs: Audio.RecordingInput[];
 };
 
 export const AudioContext = createContext<AudioContextProps>(
@@ -17,7 +18,6 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
 
   const handleAudio = async () => {
     try {
-      console.log('audio permitted', await handleAudioPermissions());
       if (await handleAudioPermissions()) {
         await Audio.setAudioModeAsync({
           playThroughEarpieceAndroid: true,
@@ -25,16 +25,11 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
-        console.log('audio is prepared', true);
         setAudioIsPrepared(true);
 
         const audio = new Audio.Recording();
         const audioInputsRes = await audio.getAvailableInputs();
-        console.log('audio inputs', audioInputsRes);
-        if (audioInputsRes.length > 0) {
-          setAudioInputs(audioInputs);
-        }
-        
+        setAudioInputs(audioInputsRes);
       }
     } catch (error) {
       throw new Error('handleAudio error ' + error);
@@ -57,18 +52,14 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     // only if audioShouldPrepare is true (if user set this prop as true to the camera component)
     // then start audio preparation
-    console.log(
-      'audio to be prepared here, audioShouldPrepar',
-      audioShouldPrepare,
-    );
-
-    if (audioShouldPrepare) {
+    if (!audioIsPrepared && audioShouldPrepare) {
       handleAudio();
     }
-  }, [audioShouldPrepare]);
+  }, [audioShouldPrepare, audioIsPrepared]);
 
   return (
-    <AudioContext.Provider value={{audioIsPrepared, setAudioShouldPrepare}}>
+    <AudioContext.Provider
+      value={{audioIsPrepared, setAudioShouldPrepare, audioInputs}}>
       {children}
     </AudioContext.Provider>
   );
@@ -76,18 +67,23 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
 
 export default AudioContextProvider;
 
-export const useAudioState = (audioSourceList: boolean) => {
-  const {audioIsPrepared, setAudioShouldPrepare} = useContext(
+export const useAudioState = (
+  onShowInputs?: (inputs: Audio.RecordingInput[]) => void,
+) => {
+  const {audioIsPrepared, setAudioShouldPrepare, audioInputs} = useContext(
     AudioContext,
   ) as AudioContextProps;
 
   useEffect(() => {
-    console.log('audioIsPrepared', audioIsPrepared, audioSourceList);
     // we must prepare audio globally only once
     if (!audioIsPrepared) {
-      setAudioShouldPrepare(audioSourceList);
+      setAudioShouldPrepare(!!onShowInputs);
     }
-  }, [audioSourceList, audioIsPrepared]);
+  }, [audioIsPrepared, onShowInputs]);
 
-  return audioIsPrepared;
+  useEffect(() => {
+    onShowInputs?.(audioInputs);
+  }, [audioInputs]);
+
+  return {audioIsPrepared, audioInputs};
 };
