@@ -16,6 +16,6 @@ declare global {
   export type CameraAVProps = CameraProps & {
     children?: React.ReactNode;
     audioSourceList?: boolean;
-    onShowCameraInputs?: (inputs: Audio.RecordingInput[]) => void;
+    onShowAudioInputs?: (inputs: Audio.RecordingInput[]) => void;
   };
 }

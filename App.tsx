@@ -15,7 +15,7 @@ const App = () => {
       <CameraAV
         audioSourceList={true}
         type={CameraType.front}
-        onShowCameraInputs={inputs => console.log('App.tsx', inputs)}
+        onShowAudioInputs={inputs => console.log('App.tsx', inputs)}
       />
     </AudioContextProvider>
   );
