@@ -3,7 +3,7 @@ import {
   type CameraProps as ExpoCameraProps,
   Camera as ExpoCamera,
 } from 'expo-camera';
-import { Audio } from 'expo-av';
+import {Audio} from 'expo-av';
 
 declare global {
   /** Expo Camera exported globally:
@@ -16,6 +16,6 @@ declare global {
   export type CameraAVProps = CameraProps & {
     children?: React.ReactNode;
     audioSourceList?: boolean;
-    onShowCameraInputs?: (inputs: Audio.RecordingInput[]) => void
+    onShowCameraInputs?: (inputs: Audio.RecordingInput[]) => void;
   };
 }

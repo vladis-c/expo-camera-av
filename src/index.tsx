@@ -1,5 +1,5 @@
-import {useEffect, useRef} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {useRef} from 'react';
+import {StyleSheet} from 'react-native';
 import {Camera as ExpoCamera} from 'expo-camera';
 
 import {useAudioState} from './Context';
