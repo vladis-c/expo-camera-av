@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
 });
 
 const CameraAV = (props: CameraAVProps) => {
-  const {children, audioSourceList, onShowInputs} = props;
+  const {children, audioSourceList, onShowCameraInputs: onShowInputs} = props;
 
   const cameraRef = useRef<Camera>(null);
   const {audioIsPrepared, audioInputs} = useAudioState(onShowInputs);
@@ -27,7 +27,7 @@ const CameraAV = (props: CameraAVProps) => {
 
   const cameraProps = omit(props, [
     'children',
-    'onShowInputs',
+    'onShowCameraInputs',
     'audioSourceList',
   ]) as CameraProps;
 
