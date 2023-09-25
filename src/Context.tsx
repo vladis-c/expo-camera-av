@@ -68,7 +68,7 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
 export default AudioContextProvider;
 
 export const useAudioState = (
-  onShowInputs?: (inputs: Audio.RecordingInput[]) => void,
+  onShowCameraInputs?: (inputs: Audio.RecordingInput[]) => void,
 ) => {
   const {audioIsPrepared, setAudioShouldPrepare, audioInputs} = useContext(
     AudioContext,
@@ -77,12 +77,12 @@ export const useAudioState = (
   useEffect(() => {
     // we must prepare audio globally only once
     if (!audioIsPrepared) {
-      setAudioShouldPrepare(!!onShowInputs);
+      setAudioShouldPrepare(!!onShowCameraInputs);
     }
-  }, [audioIsPrepared, onShowInputs]);
+  }, [audioIsPrepared, onShowCameraInputs]);
 
   useEffect(() => {
-    onShowInputs?.(audioInputs);
+    onShowCameraInputs?.(audioInputs);
   }, [audioInputs]);
 
   return {audioIsPrepared, audioInputs};
