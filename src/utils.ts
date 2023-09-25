@@ -15,28 +15,43 @@ export const omit = <T extends object, K extends keyof T>(
   return result;
 };
 
-type CameraPermissionsHookProps = {
-  audioPermissions: boolean;
+type CameraAVPermissions = {
+  cameraPermissions?: boolean;
+  microphonePermissions?: boolean;
+  audioPermissions?: boolean;
 };
+/** props:
+ * ```
+ * cameraPermissions?: boolean; // default: true
+ * microphonePermissions?: boolean // default: true
+ * audioPermissions?: boolean; // default: false
+ * ```
+ */
+export const useCameraPermissions = (props?: CameraAVPermissions): boolean => {
+  const {
+    audioPermissions = false,
+    cameraPermissions = true,
+    microphonePermissions = true,
+  } = props as CameraAVPermissions;
 
-export const useCameraPermissions = (
-  props?: CameraPermissionsHookProps,
-): boolean => {
-  const [permissions, setPermissions] = useState<boolean>(false);
+  const [permissions, setPermissions] = useState<CameraAVPermissions>({});
 
   const handlePermissions = async () => {
     try {
-      const cameraPermission = await ExpoCamera.requestCameraPermissionsAsync();
-      const micPermission =
-        await ExpoCamera.requestMicrophonePermissionsAsync();
-      let audioPermission = true;
-      if (props?.audioPermissions) {
-        const result = await Audio.requestPermissionsAsync();
-        audioPermission = result.granted;
-      }
-      if (cameraPermission && micPermission && audioPermission) {
-        setPermissions(true);
-      }
+      const cameraPermission = (
+        await ExpoCamera.requestCameraPermissionsAsync()
+      ).granted;
+      const micPermission = (
+        await ExpoCamera.requestMicrophonePermissionsAsync()
+      ).granted;
+      const audioPermission = (await Audio.requestPermissionsAsync()).granted;
+
+      setPermissions({
+        microphonePermissions: microphonePermissions && micPermission,
+        cameraPermissions: cameraPermissions && cameraPermission,
+        audioPermissions: audioPermissions && audioPermission,
+      });
+      
     } catch (error) {
       throw new Error('handlePermissions ' + error);
     }
@@ -46,5 +61,5 @@ export const useCameraPermissions = (
     handlePermissions();
   }, []);
 
-  return permissions;
+  return Object.values(permissions).every(Boolean);
 };
