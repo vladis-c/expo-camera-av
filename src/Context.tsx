@@ -13,16 +13,28 @@ export const AudioContext = createContext<AudioContextProps>(
 const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
   const [audioIsPrepared, setAudioIsPrepared] = useState<boolean>(false);
   const [audioShouldPrepare, setAudioShouldPrepare] = useState<boolean>(false);
+  const [audioInputs, setAudioInputs] = useState<Audio.RecordingInput[]>([]);
 
   const handleAudio = async () => {
     try {
+      console.log('audio permitted', await handleAudioPermissions());
       if (await handleAudioPermissions()) {
         await Audio.setAudioModeAsync({
-          //only Android setup
           playThroughEarpieceAndroid: true,
           staysActiveInBackground: true,
+          allowsRecordingIOS: true,
+          playsInSilentModeIOS: true,
         });
+        console.log('audio is prepared', true);
         setAudioIsPrepared(true);
+
+        const audio = new Audio.Recording();
+        const audioInputsRes = await audio.getAvailableInputs();
+        console.log('audio inputs', audioInputsRes);
+        if (audioInputsRes.length > 0) {
+          setAudioInputs(audioInputs);
+        }
+        
       }
     } catch (error) {
       throw new Error('handleAudio error ' + error);
@@ -31,7 +43,7 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
 
   const handleAudioPermissions = async () => {
     try {
-      const permission = await Audio.requestPermissionsAsync();
+      const permission = await Audio.getPermissionsAsync();
       if (permission.granted) {
         return true;
       } else {
@@ -45,9 +57,13 @@ const AudioContextProvider = ({children}: {children: React.ReactNode}) => {
   useEffect(() => {
     // only if audioShouldPrepare is true (if user set this prop as true to the camera component)
     // then start audio preparation
+    console.log(
+      'audio to be prepared here, audioShouldPrepar',
+      audioShouldPrepare,
+    );
+
     if (audioShouldPrepare) {
-      // handleAudio();
-      console.log('audio to be prepared here');
+      handleAudio();
     }
   }, [audioShouldPrepare]);
 
@@ -66,11 +82,12 @@ export const useAudioState = (audioSourceList: boolean) => {
   ) as AudioContextProps;
 
   useEffect(() => {
+    console.log('audioIsPrepared', audioIsPrepared, audioSourceList);
     // we must prepare audio globally only once
     if (!audioIsPrepared) {
       setAudioShouldPrepare(audioSourceList);
     }
-  }, [audioSourceList]);
+  }, [audioSourceList, audioIsPrepared]);
 
   return audioIsPrepared;
 };
