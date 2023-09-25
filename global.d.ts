@@ -17,5 +17,6 @@ declare global {
     children?: React.ReactNode;
     audioSourceList?: boolean;
     onShowAudioInputs?: (inputs: Audio.RecordingInput[]) => void;
+    cameraAfterAudio?: boolean
   };
 }

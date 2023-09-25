@@ -14,14 +14,21 @@ const styles = StyleSheet.create({
 });
 
 const CameraAV = (props: CameraAVProps) => {
-  const {children, audioSourceList, onShowAudioInputs} = props;
+  const {children, audioSourceList, onShowAudioInputs, cameraAfterAudio} =
+    props;
 
   const cameraRef = useRef<Camera>(null);
-  const {audioIsPrepared, audioInputs} = useAudioState(onShowAudioInputs);
+  const {audioIsPrepared, audioInputs, selectedAudioInput} =
+    useAudioState(onShowAudioInputs);
 
   // if user wants to enable audio source select,
   // then we check for audio and do not render camera before Audio is setup
-  if (audioSourceList && !audioIsPrepared && audioInputs.length === 0) {
+  if (
+    audioSourceList &&
+    !audioIsPrepared &&
+    (audioInputs.length === 0 || (cameraAfterAudio && !selectedAudioInput))
+  ) {
+    console.log('no input');
     return null;
   }
 
@@ -29,6 +36,7 @@ const CameraAV = (props: CameraAVProps) => {
     'children',
     'onShowAudioInputs',
     'audioSourceList',
+    'cameraAfterAudio',
   ]) as CameraProps;
 
   return (
